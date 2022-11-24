@@ -25,8 +25,10 @@ export abstract class AbstractSolution {
             "<--",
             firstExampleSolution === myFirstExampleSolution ? "Correct! ✅" : "Wrong! ❌")
 
+        let firstStartTime = new Date().getTime()
         let myRealFirstSolution = this.solveFirst(this.input)
-        console.log("Solution for real input:", myRealFirstSolution)
+        let firstEndTime = new Date().getTime()
+        console.log("Solution for real input:", myRealFirstSolution, `(in ${firstEndTime - firstStartTime} ms)`)
 
         console.log(`\nSecond Puzzle:`)
         let secondExampleSolution = this.getSecondExampleSolution()
@@ -35,7 +37,9 @@ export abstract class AbstractSolution {
             "<--",
             secondExampleSolution === mySecondExampleSolution ? "Correct! ✅" : "Wrong! ❌")
 
+        let secondStartTime = new Date().getTime()
         let myRealSecondSolution = this.solveSecond(this.input)
-        console.log("Solution for real input:", myRealSecondSolution)
+        let secondEndTime = new Date().getTime()
+        console.log("Solution for real input:", myRealSecondSolution, `(in ${secondEndTime - secondStartTime} ms)`)
     }
 }
