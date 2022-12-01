@@ -11,7 +11,10 @@ if (!dayNumber) {
 }
 
 (async () => {
-    const solution = await SolutionManager.getSolution(args[0]);
     console.log(`Solving Day ${dayNumber}:`)
+    let startTime = new Date().getTime()
+    const solution = await SolutionManager.getSolution(args[0]);
     solution.solve()
+    let endTime = new Date().getTime()
+    console.log(`Total Time with parsing: ${endTime - startTime} ms`)
 })();
