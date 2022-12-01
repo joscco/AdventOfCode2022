@@ -1,30 +1,34 @@
 import {AbstractSolution} from "../../types/AbstractSolution";
+import {ORDER_NATURAL} from "../../types/Array";
 
 export class Solution extends AbstractSolution {
     getFirstExampleSolution(): string {
-        return "7";
+        return "24000";
     }
 
     getSecondExampleSolution(): string {
-        return "5";
+        return "45000";
     }
 
     solveFirst(input: string): string {
-        let increases: number = input
-            .parseIntRows()
-            .slideWindow(2)
-            .map(str => str[0] < str[1])
-            .count(true)
-        return `${increases}`;
+        let maximalSum = input
+            .parseRows()
+            .groupSplit("")
+            .map(group => group.parseInt().add())
+            .max(ORDER_NATURAL)
+
+        return `${maximalSum}`;
     }
 
     solveSecond(input: string): string {
-        let increases: number = input
-            .parseIntRows()
-            .slideWindow(4)
-            .map(str => str[0] < str[3])
-            .count(true)
-        return `${increases}`;
+        let maxThreeSum = input
+            .parseRows()
+            .groupSplit("")
+            .map(group => group.parseInt().add())
+            .maxN(3, ORDER_NATURAL)
+            .add()
+
+        return `${maxThreeSum}`;
     }
 
 }
