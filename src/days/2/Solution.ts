@@ -10,30 +10,33 @@ export class Solution extends AbstractSolution {
     }
 
     private static parseStateToNumberTuple(state: String): number[] {
-        return [state.charCodeAt(0) - "A".charCodeAt(0), state.charCodeAt(2) - "X".charCodeAt(0)]
+        return [
+            state.charCodeAt(0) - "A".charCodeAt(0),
+            state.charCodeAt(2) - "X".charCodeAt(0)
+        ]
     }
 
     solveFirst(input: string): string {
-        let INDEX_TO_POINTS = [3, 6, 0]
+        let CHOICE_TO_POINTS = [3, 6, 0]
         let score = input
             .parseRows()
             .map(Solution.parseStateToNumberTuple)
             .map(([opChoice, myChoice]) => {
-                let indexPoints = INDEX_TO_POINTS.slide(-opChoice)
-                return indexPoints[myChoice] + myChoice + 1
+                let opponentRelativeChoiceToPoints = CHOICE_TO_POINTS.offset(-opChoice)
+                return opponentRelativeChoiceToPoints[myChoice] + myChoice + 1
             })
             .add()
         return `${score}`;
     }
 
     solveSecond(input: string): string {
-        let INDEX_TO_ANSWER = [2, 0, 1]
+        let RESULT_TO_ANSWER = [2, 0, 1]
         let score = input
             .parseRows()
             .map(Solution.parseStateToNumberTuple)
             .map(([opChoice, gameResult]) => {
-                let answerTable = INDEX_TO_ANSWER.slide(opChoice)
-                let ownChoice = answerTable[gameResult]
+                let opponentRelativeResultToAnswer = RESULT_TO_ANSWER.offset(opChoice)
+                let ownChoice = opponentRelativeResultToAnswer[gameResult]
                 return ownChoice + 1 + 3 * gameResult
             })
             .add()

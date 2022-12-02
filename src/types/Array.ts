@@ -3,7 +3,7 @@ declare global {
         slideWindow(width: number): Array<T[]>;
         count(value: T): number;
         log(lambda?: (item: T) => any[]): Array<T>;
-        slide(number: number): Array<T>;
+        offset(number: number): Array<T>;
         groupSplit(separator: String): Array<T[]>;
         parseInt(): number[]
         add(): number,
@@ -12,7 +12,7 @@ declare global {
     }
 }
 
-Array.prototype.slide = function <T>(positions: number): T[] {
+Array.prototype.offset = function <T>(positions: number): T[] {
     if (positions < 0) {
         positions = (this.length + positions) % this.length
     }
