@@ -5,6 +5,7 @@ declare global {
         log(lambda?: (item: T) => any[]): Array<T>;
         offset(number: number): Array<T>;
         groupSplit(separator: String): Array<T[]>;
+        groupSplitBySize(size: number): Array<T[]>
         parseInt(): number[]
         add(): number,
         max(sortFn: (a: T, b: T) => number): T,
@@ -65,6 +66,15 @@ Array.prototype.groupSplit = function <T>(separator: T): T[][] {
     groups.push(currentGroup)
     return groups
 }
+
+Array.prototype.groupSplitBySize= function <T>(size: number): T[][] {
+    let groups: T[][] = [];
+    for (let i = 0; i < this.length / size; i++) {
+        groups.push([...this.slice(size * i, size*(i+1))])
+    }
+    return groups
+}
+
 
 Array.prototype.log = function <T>(lambda?: (item: T) => any[]): T[] {
     if (lambda) {
