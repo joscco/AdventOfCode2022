@@ -20,11 +20,12 @@ export class Solution extends AbstractSolution {
     solveFirst(input: string): string {
         let sum = input
             .parseRows()
-            .map(str => [str.slice(0, str.length / 2), str.slice(str.length / 2, str.length)])
-            .map(str => str[0].findCommonLettersWith(str[1]))
-            .map(str => str[0])
+            .map(str => str.splitAt(str.length/2))
+            .findCommonSymbols()
+            .getFirsts()
             .map(this.letterToPriority)
             .add()
+
         return `${sum}`;
     }
 
@@ -32,8 +33,8 @@ export class Solution extends AbstractSolution {
         let sum = input
             .parseRows()
             .groupSplitBySize(3)
-            .map(str => str[0].findCommonLettersWith(str[1].findCommonLettersWith(str[2])))
-            .map(str => str[0])
+            .findCommonSymbols()
+            .getFirsts()
             .map(this.letterToPriority)
             .add()
         return `${sum}`;

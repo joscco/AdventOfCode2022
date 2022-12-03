@@ -1,22 +1,9 @@
 interface String {
-    parseRows(): String[],
-
-    parseIntRows(): number[],
-
     findCommonLettersWith(other: String[] | String): String[]
     isUpperCase(): boolean
-}
-
-String.prototype.parseRows = function (): String[] {
-    return this.split("\n")
-}
-
-String.prototype.parseIntRows = function (): number[] {
-    return this.split("\n").map(val => parseInt(val))
-}
-
-String.prototype.isUpperCase = function(): boolean {
-    return /^[A-Z]*$/.test(this as string)
+    parseRows(): String[],
+    parseIntRows(): number[],
+    splitAt(index: number): String[]
 }
 
 String.prototype.findCommonLettersWith = function (other: String | String[]): String[] {
@@ -27,4 +14,20 @@ String.prototype.findCommonLettersWith = function (other: String | String[]): St
         }
     }
     return Array.of(...result)
+}
+
+String.prototype.isUpperCase = function(): boolean {
+    return /^[A-Z]*$/.test(this as string)
+}
+
+String.prototype.parseRows = function (): String[] {
+    return this.split("\n")
+}
+
+String.prototype.parseIntRows = function (): number[] {
+    return this.split("\n").map(val => parseInt(val))
+}
+
+String.prototype.splitAt = function(index: number): String[] {
+    return [this.slice(0, index), this.slice(index, this.length)]
 }

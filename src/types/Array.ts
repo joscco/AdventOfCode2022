@@ -1,16 +1,68 @@
+// Get the single item Type from Array Type
+export type ArrayElement<A> = A extends readonly (infer T)[] ? T : never
+
 declare global {
     interface Array<T> {
-        slideWindow(width: number): Array<T[]>;
-        count(value: T): number;
-        log(lambda?: (item: T) => any[]): Array<T>;
-        offset(number: number): Array<T>;
-        groupSplit(separator: String): Array<T[]>;
-        groupSplitBySize(size: number): Array<T[]>
-        parseInt(): number[]
         add(): number,
+        count(value: T): number;
+        findCommonSymbols(): String[][]
+        getFirsts(): ArrayElement<T>[];
+        groupSplit(separator: String): T[][];
+        groupSplitBySize(size: number): T[][];
+        log(lambda?: (item: T) => any[]): T[];
         max(sortFn: (a: T, b: T) => number): T,
-        maxN(n: number, sortFn: (a: T, b: T) => number): Array<T>
+        maxN(n: number, sortFn: (a: T, b: T) => number): T[]
+        offset(number: number): T[];
+        parseInt(): number[]
+        slideWindow(width: number): T[][]
     }
+}
+
+Array.prototype.add = function (): number {
+    return this.reduce((a, b) => a + b, 0)
+}
+
+Array.prototype.count = function <T>(value: T): number {
+    let filtered = this.filter(val => value === val)
+    return filtered.length
+}
+
+Array.prototype.findCommonSymbols = function(): String[][] {
+    return this.map(arr => {
+        let result = arr[0]
+        for (let i = 1; i < arr.length; i++) {
+            result = arr[i].findCommonLettersWith(result)
+        }
+        return result
+    })
+}
+
+Array.prototype.getFirsts = function<T>(): ArrayElement<T>[]{
+    return this.map(el => el[0])
+}
+
+Array.prototype.groupSplit = function <T>(separator: T): T[][] {
+    let groups: T[][] = [];
+    let currentGroup: T[] = []
+    for (let i = 0; i < this.length; i++) {
+        if (this[i] === separator) {
+            groups.push(currentGroup)
+            currentGroup = []
+        } else {
+            currentGroup.push(this[i])
+        }
+    }
+    // Don't forget the last group!
+    groups.push(currentGroup)
+    return groups
+}
+
+Array.prototype.groupSplitBySize = function <T>(size: number): T[][] {
+    let groups: T[][] = [];
+    for (let i = 0; i < this.length / size; i++) {
+        groups.push([...this.slice(size * i, size * (i + 1))])
+    }
+    return groups
 }
 
 Array.prototype.offset = function <T>(positions: number): T[] {
@@ -20,11 +72,7 @@ Array.prototype.offset = function <T>(positions: number): T[] {
     return [...this.slice(positions, this.length), ...this.slice(0, positions)]
 }
 
-Array.prototype.add = function (): number {
-    return this.reduce((a, b) => a + b, 0)
-}
-
-Array.prototype.parseInt = function(): number[] {
+Array.prototype.parseInt = function (): number[] {
     return this.map(val => parseInt(val as string))
 }
 
@@ -51,31 +99,6 @@ Array.prototype.slideWindow = function <T>(width: number): T[][] {
     return result
 }
 
-Array.prototype.groupSplit = function <T>(separator: T): T[][] {
-    let groups: T[][] = [];
-    let currentGroup: T[] = []
-    for (let i = 0; i < this.length; i++) {
-        if (this[i] === separator) {
-            groups.push(currentGroup)
-            currentGroup = []
-        } else {
-            currentGroup.push(this[i])
-        }
-    }
-    // Don't forget the last group!
-    groups.push(currentGroup)
-    return groups
-}
-
-Array.prototype.groupSplitBySize= function <T>(size: number): T[][] {
-    let groups: T[][] = [];
-    for (let i = 0; i < this.length / size; i++) {
-        groups.push([...this.slice(size * i, size*(i+1))])
-    }
-    return groups
-}
-
-
 Array.prototype.log = function <T>(lambda?: (item: T) => any[]): T[] {
     if (lambda) {
         this.forEach(item => console.log(...lambda(item)))
@@ -84,11 +107,6 @@ Array.prototype.log = function <T>(lambda?: (item: T) => any[]): T[] {
     }
 
     return this
-}
-
-Array.prototype.count = function <T>(value: T): number {
-    let filtered = this.filter(val => value === val)
-    return filtered.length
 }
 
 export function ORDER_NATURAL(a: number, b: number): number {
