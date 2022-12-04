@@ -25,7 +25,6 @@ export class Solution extends AbstractSolution {
             .getFirsts()
             .map(this.letterToPriority)
             .add()
-
         return `${sum}`;
     }
 
