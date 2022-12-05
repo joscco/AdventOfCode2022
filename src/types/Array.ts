@@ -5,7 +5,9 @@ declare global {
     interface Array<T> {
         add(): number,
         count(value: T): number;
+        contains(element: T): boolean;
         findCommonSymbols(): String[][]
+        get(indices: number[]): T[];
         getFirsts(): ArrayElement<T>[];
         groupSplit(separator: String): T[][];
         groupSplitBySize(size: number): T[][];
@@ -35,6 +37,14 @@ Array.prototype.findCommonSymbols = function(): String[][] {
         }
         return result
     })
+}
+
+Array.prototype.contains = function<T> (element: T): boolean {
+    return this.indexOf(element) > -1
+}
+
+Array.prototype.get = function<T>(indices: number[]): T[]{
+    return this.filter((val, i) => indices.contains(i))
 }
 
 Array.prototype.getFirsts = function<T>(): ArrayElement<T>[]{
