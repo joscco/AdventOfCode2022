@@ -1,19 +1,14 @@
 interface String {
-    containsMultipleSymbols(): boolean
-
+    containsMultipleLetters(): boolean
     findCommonLettersWith(other: String[] | String): String[]
-
     isUpperCase(): boolean
-
     parseRows(): String[],
-
     parseIntRows(): number[],
-
     splitAt(index: number): String[],
-
+    slideWindow(width: number): String[]
 }
 
-String.prototype.containsMultipleSymbols = function (): boolean {
+String.prototype.containsMultipleLetters = function (): boolean {
     for (let i = 0; i < this.length - 1; i++) {
         if (this.substring(Math.min(i + 1, this.length - 1), this.length).indexOf(this.charAt(i)) > -1) {
             return true
@@ -46,4 +41,12 @@ String.prototype.parseIntRows = function (): number[] {
 
 String.prototype.splitAt = function (index: number): String[] {
     return [this.slice(0, index), this.slice(index, this.length)]
+}
+
+String.prototype.slideWindow = function (width: number): String[] {
+    let result = [];
+    for (let i = width - 1; i < this.length; i++) {
+        result.push(this.slice(i - width + 1, i + 1))
+    }
+    return result
 }

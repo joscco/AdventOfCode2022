@@ -11,10 +11,9 @@ export class Solution extends AbstractSolution {
 
     solveFirst(input: string): string {
         let uniqueIndices: number[] = []
-        input.split("")
-            .slideWindow(4)
+        input.slideWindow(4)
             .map((val, index) => {
-                if (!val.containsMultipleSymbols()) {
+                if (!val.containsMultipleLetters()) {
                     uniqueIndices.push(index + 4)
                 }
             })
@@ -24,10 +23,9 @@ export class Solution extends AbstractSolution {
 
     solveSecond(input: string): string {
         let uniqueIndices: number[] = []
-        input.split("")
-            .slideWindow(14)
+        input.slideWindow(14)
             .map((val, index) => {
-                if (!val.containsMultipleSymbols()) {
+                if (!val.containsMultipleLetters()) {
                     uniqueIndices.push(index + 14)
                 }
             })

@@ -6,7 +6,7 @@ declare global {
         add(): number,
         count(value: T): number;
         contains(element: T): boolean;
-        containsMultipleSymbols(): boolean;
+        containsMultipleElements(): boolean;
         findCommonSymbols(): String[][]
         get(indices: number[]): T[];
         getFirsts(): ArrayElement<T>[];
@@ -44,7 +44,7 @@ Array.prototype.contains = function<T> (element: T): boolean {
     return this.indexOf(element) > -1
 }
 
-Array.prototype.containsMultipleSymbols = function (): boolean {
+Array.prototype.containsMultipleElements = function (): boolean {
     for (let i = 0; i < this.length - 1; i++) {
         if (this.slice(Math.min(i + 1, this.length - 1), this.length).indexOf(this[i]) > -1) {
             return true
