@@ -10,25 +10,21 @@ export class Solution extends AbstractSolution {
     }
 
     solveFirst(input: string): string {
-        let uniqueIndices: number[] = []
-        input.slideWindow(4)
-            .map((val, index) => {
-                if (!val.containsMultipleLetters()) {
-                    uniqueIndices.push(index + 4)
-                }
-            })
-
-        return `${uniqueIndices[0]}`;
+        return `${this.findFirstNDifferent(input, 4)}`;
     }
 
     solveSecond(input: string): string {
-        let uniqueIndices: number[] = []
-        input.slideWindow(14)
-            .map((val, index) => {
-                if (!val.containsMultipleLetters()) {
-                    uniqueIndices.push(index + 14)
-                }
-            })
-        return `${uniqueIndices[0]}`;
+        return `${this.findFirstNDifferent(input, 14)}`;
+    }
+
+    findFirstNDifferent(input: string, n: number): number {
+        let result: number = -1
+        for(let [i, quadruple] of input.slideWindow(n).entries()) {
+            if (!quadruple.containsRepeatingLetters()) {
+                result = i + n
+                break
+            }
+        }
+        return result
     }
 }

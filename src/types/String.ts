@@ -1,5 +1,5 @@
 interface String {
-    containsMultipleLetters(): boolean
+    containsRepeatingLetters(): boolean
     findCommonLettersWith(other: String[] | String): String[]
     isUpperCase(): boolean
     parseRows(): String[],
@@ -8,13 +8,8 @@ interface String {
     slideWindow(width: number): String[]
 }
 
-String.prototype.containsMultipleLetters = function (): boolean {
-    for (let i = 0; i < this.length - 1; i++) {
-        if (this.substring(Math.min(i + 1, this.length - 1), this.length).indexOf(this.charAt(i)) > -1) {
-            return true
-        }
-    }
-    return false
+String.prototype.containsRepeatingLetters = function (): boolean {
+    return new Set(this.split("")).size !== this.length
 }
 
 String.prototype.findCommonLettersWith = function (other: String | String[]): String[] {
