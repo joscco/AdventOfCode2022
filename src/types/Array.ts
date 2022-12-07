@@ -10,6 +10,7 @@ declare global {
         findCommonSymbols(): String[][]
         get(indices: number[]): T[];
         getFirsts(): ArrayElement<T>[];
+        getFirst(condition: (element: T) => boolean): T;
         groupSplit(separator: String): T[][];
         groupSplitBySize(size: number): T[][];
         log(lambda?: (item: T) => any[]): T[];
@@ -54,6 +55,15 @@ Array.prototype.get = function<T>(indices: number[]): T[]{
 
 Array.prototype.getFirsts = function<T>(): ArrayElement<T>[]{
     return this.map(el => el[0])
+}
+
+Array.prototype.getFirst = function<T>(condition: (element: T) => boolean): T | undefined {
+    for (let element of this){
+        if (condition(element)) {
+            return element
+        }
+    }
+    return undefined
 }
 
 Array.prototype.groupSplit = function <T>(separator: T): T[][] {
