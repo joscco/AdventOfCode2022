@@ -2,6 +2,7 @@ interface String {
     containsRepeatingLetters(): boolean
     findCommonLettersWith(other: String[] | String): String[]
     isUpperCase(): boolean
+    isNumber(): boolean
     parseRows(): String[],
     parseIntRows(): number[],
     splitAt(index: number): String[],
@@ -24,6 +25,9 @@ String.prototype.findCommonLettersWith = function (other: String | String[]): St
 
 String.prototype.isUpperCase = function (): boolean {
     return /^[A-Z]*$/.test(this as string)
+}
+String.prototype.isNumber = function (): boolean {
+    return /^[0-9]*$/.test(this as string)
 }
 
 String.prototype.parseRows = function (): String[] {
