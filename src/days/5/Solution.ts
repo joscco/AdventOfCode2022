@@ -1,4 +1,5 @@
 import {AbstractSolution} from "../../types/AbstractSolution";
+import {makeEmpty2DArray} from "../../types/Array";
 
 export class Solution extends AbstractSolution {
     getFirstExampleSolution(): string {
@@ -32,14 +33,6 @@ export class Solution extends AbstractSolution {
         return stacks.reduce((lastResult, stack) => lastResult + stack[stack.length - 1], "")
     }
 
-    makeEmptyArr(length: number): any[][] {
-        let result = []
-        for (let i = 0; i < length; i++) {
-            result.push([])
-        }
-        return result
-    }
-
     private move(stacks: String[][], fromIndex: number, toIndex: number, amount: number, reverse: boolean): string[][] {
         let newStacks: string[][] = Object.assign([], stacks)
         let oldFromStack = newStacks[fromIndex]
@@ -54,7 +47,7 @@ export class Solution extends AbstractSolution {
     private initStacks(stackLines: String[]) {
         let lastLine = stackLines[stackLines.length - 1]
         let stackIndices = lastLine.split("   ").length
-        let result: string[][] = this.makeEmptyArr(stackIndices)
+        let result: string[][] = makeEmpty2DArray(stackIndices)
 
         for (let lineIndex = stackLines.length - 2; lineIndex >= 0; lineIndex--) {
             for (let stackIndex = 0; stackIndex < stackIndices; stackIndex++) {

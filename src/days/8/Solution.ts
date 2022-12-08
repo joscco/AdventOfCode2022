@@ -1,5 +1,5 @@
 import {AbstractSolution} from "../../types/AbstractSolution";
-import {ORDER_NATURAL} from "../../types/Array";
+import {makeEmpty2DArray, ORDER_NATURAL} from "../../types/Array";
 
 export class Solution extends AbstractSolution {
     getFirstExampleSolution(): string {
@@ -14,117 +14,22 @@ export class Solution extends AbstractSolution {
         let field = input.parseRows()
             .map(line => line.split("").parseInt())
 
-        let topVisible: string[] = []
-        for (let j = 0; j < field[0].length; j++) {
-            let currentHighest = -1
-            for (let i = 0; i < field.length; i++) {
-                if (field[i][j] > currentHighest) {
-                    currentHighest = field[i][j]
-                    topVisible.push(`${i}_${j}`)
-                }
-            }
-        }
-
-        let bottomVisible: string[] = []
-        for (let j = 0; j < field[0].length; j++) {
-            let currentHighest = -1
-            for (let i = field.length - 1; i >= 0; i--) {
-                if (field[i][j] > currentHighest) {
-                    currentHighest = field[i][j]
-                    bottomVisible.push(`${i}_${j}`)
-                }
-            }
-        }
-
-        let leftVisible: string[] = []
-        for (let i = 0; i < field.length; i++) {
-            let currentHighest = -1
-            for (let j = 0; j < field[0].length; j++) {
-                if (field[i][j] > currentHighest) {
-                    currentHighest = field[i][j]
-                    leftVisible.push(`${i}_${j}`)
-                }
-            }
-        }
-
-        let rightVisible: string[] = []
-        for (let i = 0; i < field.length; i++) {
-            let currentHighest = -1
-            for (let j = field[0].length - 1; j >= 0; j--) {
-                if (field[i][j] > currentHighest) {
-                    currentHighest = field[i][j]
-                    rightVisible.push(`${i}_${j}`)
-                }
-            }
-        }
+        let leftVisible: string[] = this.getVisibleIndices(field, false, false)
+        let rightVisible: string[] = this.getVisibleIndices(field, false, true)
+        let topVisible: string[] = this.getVisibleIndices(field, true, false)
+        let bottomVisible: string[] = this.getVisibleIndices(field, true, true)
 
         return new Set([...topVisible, ...bottomVisible, ...leftVisible, ...rightVisible]).size.toString()
-    }
-
-    makeEmptyArr(length: number): any[][] {
-        let result = []
-        for (let i = 0; i < length; i++) {
-            result.push([])
-        }
-        return result
     }
 
     solveSecond(input: string): string {
         let field = input.parseRows()
             .map(line => line.split("").parseInt())
 
-        let topScenicScores: number[][] = this.makeEmptyArr(field.length)
-        for (let j = 0; j < field[0].length; j++) {
-            for (let i = 0; i < field.length; i++) {
-                topScenicScores[i][j] = 0
-                for (let k = i + 1; k < field.length; k++) {
-                    topScenicScores[i][j] = topScenicScores[i][j] + 1
-                    if (field[k][j] >= field[i][j]) {
-                        break
-                    }
-                }
-            }
-        }
-
-        let bottomScenicScores: number[][] = this.makeEmptyArr(field.length)
-        for (let j = 0; j < field[0].length; j++) {
-            for (let i = field.length - 1; i >= 0; i--) {
-                bottomScenicScores[i][j] = 0
-                for (let k = i - 1; k >= 0; k--) {
-                    bottomScenicScores[i][j] = bottomScenicScores[i][j] + 1
-                    if (field[k][j] >= field[i][j]) {
-                        break
-                    }
-                }
-            }
-        }
-
-        let leftScenicScores: number[][] = this.makeEmptyArr(field.length)
-        for (let i = 0; i < field.length; i++) {
-            for (let j = 0; j < field[0].length; j++) {
-                leftScenicScores[i][j] = 0
-                for (let k = j+1; k < field[0].length; k++) {
-                    leftScenicScores[i][j] = leftScenicScores[i][j] + 1
-                    if (field[i][k] >= field[i][j]) {
-                        break
-                    }
-                }
-            }
-        }
-
-        let rightScenicScores: number[][] = this.makeEmptyArr(field.length)
-        for (let i = 0; i < field.length; i++) {
-            for (let j = field[0].length - 1; j >= 0; j--) {
-                rightScenicScores[i][j] = 0
-                for (let k = j - 1; k >= 0; k--) {
-                    rightScenicScores[i][j] = rightScenicScores[i][j] + 1
-                    if (field[i][k] >= field[i][j]) {
-                       break
-                    }
-                }
-            }
-        }
-
+        let leftScenicScores = this.getScenicScores(field, false, false)
+        let rightScenicScores = this.getScenicScores(field, false, true)
+        let topScenicScores = this.getScenicScores(field, true, false)
+        let bottomScenicScores = this.getScenicScores(field, true, true)
 
         return this.fieldMultiply(topScenicScores, bottomScenicScores, leftScenicScores, rightScenicScores)
             .flatMap(val => val)
@@ -133,15 +38,89 @@ export class Solution extends AbstractSolution {
     }
 
     private fieldMultiply(...a: number[][][]): number[][] {
-        let result = this.makeEmptyArr(a[0].length)
+        let result = makeEmpty2DArray(a[0].length)
         for (let i = 0; i < result.length; i++) {
             for (let j = 0; j < a[0][0].length; j++) {
                 result[i][j] = 1
                 for (let table of a) {
-                     result[i][j] *= table[i][j]
+                    result[i][j] *= table[i][j]
                 }
             }
         }
         return result
+    }
+
+    getScenicScores(field: number[][], vertical: boolean, reverse: boolean): number[][] {
+        let scenicScores: number[][] = makeEmpty2DArray(field.length)
+
+        let helpField = field
+
+        if (vertical) {
+            helpField = helpField.getColumns()
+        }
+
+        if (reverse) {
+            helpField = helpField.map(row => row.reverse())
+        }
+
+        for (let i = 0; i < helpField.length; i++) {
+            for (let j = 0; j < helpField[0].length; j++) {
+                let [outerIndex, innerIndex] = vertical ? [j, i] : [i, j]
+                if (reverse) {
+                    if (vertical) {
+                        // Bottom View
+                        outerIndex = helpField.length - 1 - j
+                    } else {
+                        // Right View
+                        innerIndex = helpField[0].length - 1 - j
+                    }
+                }
+
+                scenicScores[outerIndex][innerIndex] = 0
+                for (let k = j + 1; k < helpField[0].length; k++) {
+                    scenicScores[outerIndex][innerIndex] = scenicScores[outerIndex][innerIndex] + 1
+                    if (helpField[i][k] >= helpField[i][j]) {
+                        break
+                    }
+                }
+            }
+        }
+
+        return scenicScores
+    }
+
+    getVisibleIndices(field: number[][], vertical: boolean, reverse: boolean): string[] {
+        let visibleIndices: string[] = []
+
+        let helpField = field
+        if (vertical) {
+            helpField = helpField.getColumns()
+        }
+        if (reverse) {
+            helpField = helpField.map(row => row.reverse())
+        }
+
+        for (let i = 0; i < helpField.length; i++) {
+            let currentHighest = -1
+            for (let j = 0; j < helpField[0].length; j++) {
+                let [outerIndex, innerIndex] = vertical ? [j, i] : [i, j]
+                if (reverse) {
+                    if (vertical) {
+                        // Bottom View
+                        outerIndex = helpField.length - 1 - j
+                    } else {
+                        // Right View
+                        innerIndex = helpField[0].length - 1 - j
+                    }
+                }
+
+                if (helpField[i][j] > currentHighest) {
+                    currentHighest = helpField[i][j]
+                    visibleIndices.push(`${outerIndex}_${innerIndex}`)
+                }
+            }
+        }
+
+        return visibleIndices
     }
 }

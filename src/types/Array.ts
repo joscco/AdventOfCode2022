@@ -4,20 +4,39 @@ export type ArrayElement<A> = A extends readonly (infer T)[] ? T : never
 declare global {
     interface Array<T> {
         add(): number,
+
         count(value: T): number;
+
         contains(element: T): boolean;
+
         containsRepeatingElements(): boolean;
+
         findCommonSymbols(): String[][]
+
         get(indices: number[]): T[];
+
+        getColumns(): T[]
+
         getFirsts(): ArrayElement<T>[];
+
         getFirst(condition: (element: T) => boolean): T;
+
         groupSplit(separator: String): T[][];
+
         groupSplitBySize(size: number): T[][];
+
         log(lambda?: (item: T) => any[]): T[];
+
         max(sortFn: (a: T, b: T) => number): T,
+
         maxN(n: number, sortFn: (a: T, b: T) => number): T[]
+
         offset(number: number): T[];
+
+        reverse(): T[]
+
         parseInt(): number[]
+
         slideWindow(width: number): T[][]
     }
 }
@@ -31,7 +50,7 @@ Array.prototype.count = function <T>(value: T): number {
     return filtered.length
 }
 
-Array.prototype.findCommonSymbols = function(): String[][] {
+Array.prototype.findCommonSymbols = function (): String[][] {
     return this.map(arr => {
         let result = arr[0]
         for (let i = 1; i < arr.length; i++) {
@@ -41,7 +60,7 @@ Array.prototype.findCommonSymbols = function(): String[][] {
     })
 }
 
-Array.prototype.contains = function<T> (element: T): boolean {
+Array.prototype.contains = function <T>(element: T): boolean {
     return this.indexOf(element) > -1
 }
 
@@ -49,16 +68,27 @@ Array.prototype.containsRepeatingElements = function (): boolean {
     return new Set(this).size !== this.length
 }
 
-Array.prototype.get = function<T>(indices: number[]): T[]{
+Array.prototype.get = function <T>(indices: number[]): T[] {
     return this.filter((val, i) => indices.contains(i))
 }
 
-Array.prototype.getFirsts = function<T>(): ArrayElement<T>[]{
+
+Array.prototype.getColumns = function <T>(): T[][] {
+    let result: T[][] = makeEmpty2DArray(this[0].length)
+    for (let i = 0; i < this.length; i++) {
+        for (let j = 0; j < this[0].length; j++) {
+            result[j].push(this[i][j])
+        }
+    }
+    return result
+}
+
+Array.prototype.getFirsts = function <T>(): ArrayElement<T>[] {
     return this.map(el => el[0])
 }
 
-Array.prototype.getFirst = function<T>(condition: (element: T) => boolean): T | undefined {
-    for (let element of this){
+Array.prototype.getFirst = function <T>(condition: (element: T) => boolean): T | undefined {
+    for (let element of this) {
         if (condition(element)) {
             return element
         }
@@ -80,6 +110,14 @@ Array.prototype.groupSplit = function <T>(separator: T): T[][] {
     // Don't forget the last group!
     groups.push(currentGroup)
     return groups
+}
+
+export function makeEmpty2DArray(length: number): any[][] {
+    let result = []
+    for (let i = 0; i < length; i++) {
+        result.push([])
+    }
+    return result
 }
 
 Array.prototype.groupSplitBySize = function <T>(size: number): T[][] {
@@ -114,6 +152,14 @@ Array.prototype.max = function <T>(sortFn: (a: T, b: T) => number): number {
 Array.prototype.maxN = function <T>(n: number, sortFn: (a: T, b: T) => number): T[] {
     let sorted = Object.assign([], this).sort(sortFn)
     return sorted.slice(this.length - n, this.length)
+}
+
+Array.prototype.reverse = function <T>(): T[] {
+    let result = []
+    for (let i = this.length - 1; i >= 0; i--) {
+        result.push(this[i])
+    }
+    return result
 }
 
 Array.prototype.slideWindow = function <T>(width: number): T[][] {
