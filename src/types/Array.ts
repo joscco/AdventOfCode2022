@@ -72,7 +72,6 @@ Array.prototype.get = function <T>(indices: number[]): T[] {
     return this.filter((val, i) => indices.contains(i))
 }
 
-
 Array.prototype.getColumns = function <T>(): T[][] {
     let result: T[][] = makeEmpty2DArray(this[0].length)
     for (let i = 0; i < this.length; i++) {
