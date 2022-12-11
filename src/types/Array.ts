@@ -31,6 +31,8 @@ declare global {
 
         maxN(n: number, sortFn: (a: T, b: T) => number): T[]
 
+        multiply(): number,
+
         offset(number: number): T[];
 
         reverse(): T[]
@@ -151,6 +153,10 @@ Array.prototype.max = function <T>(sortFn: (a: T, b: T) => number): number {
 Array.prototype.maxN = function <T>(n: number, sortFn: (a: T, b: T) => number): T[] {
     let sorted = Object.assign([], this).sort(sortFn)
     return sorted.slice(this.length - n, this.length)
+}
+
+Array.prototype.multiply = function (): number {
+    return this.reduce((a, b) => a * b, 1)
 }
 
 Array.prototype.reverse = function <T>(): T[] {
