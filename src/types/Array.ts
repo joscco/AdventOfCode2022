@@ -29,6 +29,8 @@ declare global {
 
         max(sortFn: (a: T, b: T) => number): T,
 
+        min(sortFn: (a: T, b: T) => number): T,
+
         maxN(n: number, sortFn: (a: T, b: T) => number): T[]
 
         multiply(): number,
@@ -148,6 +150,10 @@ Array.prototype.max = function <T>(sortFn: (a: T, b: T) => number): number {
         }
     }
     return currentMax
+}
+
+Array.prototype.min = function <T>(sortFn: (a: T, b: T) => number): number {
+    return this.max((a, b) => -sortFn(a, b))
 }
 
 Array.prototype.maxN = function <T>(n: number, sortFn: (a: T, b: T) => number): T[] {
