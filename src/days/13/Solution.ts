@@ -14,9 +14,9 @@ export class Solution extends AbstractSolution {
         let indexSum = 0
         input.parseRows()
             .groupSplit("")
-            .map(pair => this.hasRightOrder(pair))
+            .map(pair => pair.map(entry => JSON.parse(entry as string)))
             .map((pair, index) => {
-                if (pair) {
+                if (this.compare(pair[0], pair[1]) > 0) {
                     indexSum += index + 1
                 }
             });
@@ -24,105 +24,49 @@ export class Solution extends AbstractSolution {
     }
 
     solveSecond(input: string): string {
-        let indexProduct = 1
         let rows = input.parseRows()
         rows.push("[[2]]", "[[6]]")
-        rows.filter(line => line !== "")
-            .sort((a, b) => this.hasRightOrder([a, b]) ? -1 : 1)
-            .map((line, i) => {
-                if(line === "[[2]]" || line === "[[6]]") {
-                    indexProduct *= i +1
-                }
-            })
+        let sorted = rows.filter(line => line !== "")
+            .map(line => JSON.parse(line as string))
+            .sort((a, b) => -this.compare(a, b))
 
-        return `${indexProduct}`
+        return `${(sorted.findIndex(val => JSON.stringify(val) === "[[6]]") + 1) * (sorted.findIndex(val => JSON.stringify(val) === "[[2]]") + 1)}`
     }
 
-    hasRightOrder(pair: String[]): boolean {
-        return this.compare(pair[0], pair[1]).right
-    }
-
-    private compare(left: String, right: String): {right: boolean, final: boolean} {
-        if (left === "") {
-            return {right: true, final: false}
+    private compare(left: Array<any> | number, right: Array<any> | number): number {
+        if (left === undefined) {
+            return 1
         }
 
-        if (right === "") {
-            return {right: false, final: true}
+        if (right === undefined) {
+            return -1
         }
 
-        if (left[0] === "[" && right[0] === "[") {
-            let strippedLeft = this.unwrap(left)
-            let leftElements = this.getElements(strippedLeft)
-            let strippedRight = this.unwrap(right)
-            let rightElements = this.getElements(strippedRight)
-
-            for (let i = 0; i < leftElements.length; i++) {
-                let leftElement = leftElements[i]
-                let rightElement = rightElements[i]
-
-                if (rightElement === undefined) {
-                    return {right: false, final: true}
+        if (Array.isArray(left) && Array.isArray(right)) {
+            for (let i = 0; i < left.length; i++) {
+                if (left[i] === undefined) {
+                    return -1
                 }
-
-                let comparisonResult = this.compare(leftElement, rightElement)
-                if (comparisonResult.right) {
-                    return {right: true, final: true}
-                } else if (!comparisonResult.right && comparisonResult.final) {
-                    return {right: false, final: true}
+                let comparisonResult = this.compare(left[i], right[i])
+                if (comparisonResult != 0) {
+                    return comparisonResult
                 }
             }
 
-            // Comparing Elements didn't give a result
-            if (rightElements.length > leftElements.length) {
-                return {right: true, final: true}
-            }
-
-            // Continue
-            return {right: false, final: false}
-        } else if (left[0] === "[" && right[0].isNumber()) {
-            return this.compare(left, this.wrap(right))
-        } else if (left[0].isNumber() && right[0] === "[") {
-            return this.compare(this.wrap(left), right)
+            // If all objects were equal so far, let the length decide
+            return right.length - left.length
+        } else if (this.isNumber(left) && this.isNumber(right)) {
+            return (right as number) - (left as number)
         } else {
-            // Both must be single numbers
-            if (parseInt(left as string) < parseInt(right as string)) {
-                return {right: true, final: true}
-            } else if (parseInt(left as string) > parseInt(right as string)) {
-                return {right: false, final: true}
-            } else {
-                return {right: false, final: false}
-            }
+            return this.compare(this.wrapIfNecessary(left), this.wrapIfNecessary(right))
         }
     }
 
-    private getElements(strippedLeft: string): string[] {
-        let elements: string[] = []
-        let currentElement = ""
-        let level = 0
-        for (let i = 0; i < strippedLeft.length; i++) {
-            if (strippedLeft[i] === "[") {
-                currentElement += strippedLeft[i]
-                level++
-            } else if (strippedLeft[i] === "]") {
-                currentElement += strippedLeft[i]
-                level--
-            } else if (strippedLeft[i] === "," && level === 0) {
-                elements.push(currentElement)
-                currentElement = ""
-            } else {
-                currentElement += strippedLeft[i]
-            }
-        }
-        elements.push(currentElement)
-        return elements
+    private isNumber(input: any): boolean {
+        return !isNaN(input as number)
     }
 
-    private unwrap(val: String) {
-        return val.slice(1, val.length - 1);
-    }
-
-    private wrap(val: String) {
-        return "[" + val + "]"
+    private wrapIfNecessary(input: any) {
+        return Array.isArray(input) ? input : [input]
     }
 }
