@@ -13,65 +13,21 @@ export class Solution extends AbstractSolution {
     }
 
     solveFirst(input: string): string {
-        let tuples: number[][][] = input.parseRows()
-            .map(row => row
-                .split(" -> ")
-                .map(rawTuple => rawTuple.split(",").parseInt())
-                .map(tuple => [tuple[1], tuple[0]])
-                .slideWindow(2))
-            .flatMap(IDENTITY)
-
-        let maxHeight: number = tuples.map(val => [val[0][0], val[1][0]]).flatMap(val => val).max(ORDER_NATURAL)
-
-        // All sand grains can at max form a triangle. We can actually ignore all other bricks
-        let widthX = 1 + 2 * (maxHeight + 2 + 1)
-        let minX = Math.floor(500 - widthX / 2)
-
-        let field: string[][] = makeEmpty2DArray(maxHeight + 3)
-            .map(() => Array(widthX).fill("."))
-
-        tuples.map(pair => {
-            pair = pair.map(val => [val[0], val[1] - minX])
-            this.drawLine(field, pair)
-            return pair
-        })
+        let {minX, field} = this.initField(input);
 
         let numberOfGrains: number = 0
         while (true) {
             if (this.simulateSandGrain(field, 0, 500 - minX)) {
-                break
+                return `${numberOfGrains}`
             }
             numberOfGrains++
         }
-
-        return `${numberOfGrains}`
     }
 
     solveSecond(input: string): string {
-        let tuples: number[][][] = input.parseRows()
-            .map(row => row
-                .split(" -> ")
-                .map(rawTuple => rawTuple.split(",").parseInt())
-                .map(tuple => [tuple[1], tuple[0]])
-                .slideWindow(2))
-            .flatMap(IDENTITY)
+        let {minX, field} = this.initField(input);
 
-        let maxHeight: number = tuples.map(val => [val[0][0], val[1][0]]).flatMap(val => val).max(ORDER_NATURAL)
-
-        // All sand grains can at max form a triangle. We can actually ignore all other bricks
-        let widthX = 1 + 2 * (maxHeight + 2 + 1)
-        let minX = Math.floor(500 - widthX / 2)
-
-        let field: string[][] = makeEmpty2DArray(maxHeight + 3)
-            .map(() => Array(widthX).fill("."))
-
-        tuples.map(pair => {
-            pair = pair.map(val => [val[0], val[1] - minX])
-            this.drawLine(field, pair)
-            return pair
-        })
-
-        this.drawLine(field, [[maxHeight + 2, 0], [maxHeight + 2, widthX]])
+        this.drawLine(field, [[field.length - 1, 0], [field.length - 1, field[0].length]])
 
         let numberOfGrains: number = 0
         while (!this.positionBlocked(field, [0, 500 - minX])) {
@@ -80,6 +36,34 @@ export class Solution extends AbstractSolution {
         }
 
         return `${numberOfGrains}`
+    }
+
+    private initField(input: string) {
+        let tuples: number[][][] = input.parseRows()
+            .map(row => row
+                .split(" -> ")
+                .map(rawTuple => rawTuple.split(",").parseInt())
+                .map(tuple => [tuple[1], tuple[0]])
+                .slideWindow(2))
+            .flatMap(IDENTITY)
+
+        let maxHeight: number = tuples.map(val => [val[0][0], val[1][0]])
+            .flatMap(val => val)
+            .max(ORDER_NATURAL)
+
+        // All sand grains can at max form a triangle. We can actually ignore all other bricks
+        let widthX = 1 + 2 * (maxHeight + 2 + 1)
+        let minX = Math.floor(500 - widthX / 2)
+
+        let field: string[][] = makeEmpty2DArray(maxHeight + 3)
+            .map(() => Array(widthX).fill("."))
+
+        tuples.map(pair => {
+            pair = pair.map(val => [val[0], val[1] - minX])
+            this.drawLine(field, pair)
+            return pair
+        })
+        return {minX, field};
     }
 
     private getRange(start: number, end: number): number[] {
@@ -116,8 +100,8 @@ export class Solution extends AbstractSolution {
 
     private simulateSandGrain(field: string[][], startX: number, startY: number) {
         let lastPos: number[] = [startX, startY]
+        let newPos: number[] = [startX, startY]
         for (let i = 0; i < field.length; i++) {
-            let newPos: number[] = lastPos
             if (!this.positionBlocked(field, [lastPos[0] + 1, lastPos[1]])) {
                 newPos = [lastPos[0] + 1, lastPos[1]]
             } else if (!this.positionBlocked(field, [lastPos[0] + 1, lastPos[1] - 1])) {
