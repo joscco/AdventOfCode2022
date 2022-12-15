@@ -36,8 +36,6 @@ export class Solution extends AbstractSolution {
         })
 
         // Now shorten intervals to at most two big ones
-        knownIntervals = knownIntervals.sort((a, b) => a[0] - b[0])
-
 
         let bigIntervalls: number[][] = []
         knownIntervals.map(interval => {
@@ -72,9 +70,6 @@ export class Solution extends AbstractSolution {
             })
 
             // Now shorten intervals to at most two big ones
-            knownIntervals = knownIntervals.sort((a, b) => a[0] - b[0])
-
-
             let bigIntervalls: number[][] = []
             knownIntervals.map(interval => {
                 if (bigIntervalls.length === 0) {
