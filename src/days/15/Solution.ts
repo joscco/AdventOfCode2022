@@ -11,6 +11,46 @@ export class Solution extends AbstractSolution {
         return "56000011";
     }
 
+    solveFirst(input: string, test: boolean): string {
+        let numbers: number[][] = input.parseRows()
+            .map(line => line
+                .split(": closest beacon is at ")
+                .map(half => half.split(", ")))
+            .map(entries => [entries[0][0].substring(12), entries[0][1].substring(2), entries[1][0].substring(2), entries[1][1].substring(2)])
+            .map(row => row.map(val => parseInt(val)))
+
+        let row = test ? 10 : 2000000
+        let beacons = new Set<string>()
+        let knownIntervals: number[][] = []
+        numbers.map(fours => {
+            let distance = this.getManhattenDistance(fours)
+            let offset = distance - Math.abs(row - fours[1])
+
+            if(fours[3] === row) {
+                beacons.add(fours[2] + "_" + fours[3])
+            }
+
+            if (offset >= 0) {
+                knownIntervals.push([fours[0] - offset, fours[0] + offset])
+            }
+        })
+
+        // Now shorten intervals to at most two big ones
+        knownIntervals = knownIntervals.sort((a, b) => a[0] - b[0])
+
+
+        let bigIntervalls: number[][] = []
+        knownIntervals.map(interval => {
+            if (bigIntervalls.length === 0) {
+                bigIntervalls.push(interval)
+            } else {
+                bigIntervalls = this.unionIntervalls(bigIntervalls, interval)
+            }
+        })
+
+        return (bigIntervalls[0][1] - bigIntervalls[0][0] + 1 - beacons.size).toString()
+    }
+
     solveSecond(input: string, testMode: boolean): string {
         let numbers: number[][] = input.parseRows()
             .map(line => line
@@ -53,40 +93,9 @@ export class Solution extends AbstractSolution {
                     x = interval[1] + 1
                 }
             }
-
         }
 
-        return "bla"
-    }
-
-    solveFirst(input: string, test: boolean): string {
-        let numbers: number[][] = input.parseRows()
-            .map(line => line
-                .split(": closest beacon is at ")
-                .map(half => half.split(", ")))
-            .map(entries => [entries[0][0].substring(12), entries[0][1].substring(2), entries[1][0].substring(2), entries[1][1].substring(2)])
-            .map(row => row.map(val => parseInt(val)))
-
-            let noBeaconIntervals: Set<string> = new Set()
-            let beacons: Set<string> = new Set()
-            numbers.map(fours => {
-                beacons.add([fours[2], fours[3]].toString())
-                let distance = this.getManhattenDistance(fours)
-                let fixedY = test ? 10 : 2000000
-                if (Math.abs(fixedY - fours[1]) <= distance) {
-                    for (let i = 0; i <= distance - Math.abs(fixedY - fours[1]); i++) {
-                        if (!beacons.has([fours[0] + i, fixedY].toString())) {
-                            noBeaconIntervals.add([fours[0] + i, fixedY].toString())
-                        }
-                        if (!beacons.has([fours[0] - i, fixedY].toString())) {
-                            noBeaconIntervals.add([fours[0] - i, fixedY].toString())
-                        }
-                    }
-                }
-
-            })
-
-        return noBeaconIntervals.size.toString()
+        return "NO_RESULT"
     }
 
     private getManhattenDistance([x1, y1, x2, y2]: number[]): number {
