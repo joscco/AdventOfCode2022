@@ -79,6 +79,8 @@ export class Solution extends AbstractSolution {
                 }
             })
 
+            bigIntervalls.sort((a, b) => a[0] - b[0])
+
             let x = 0
             for (let interval of bigIntervalls) {
                 if (x < interval[0]) {
