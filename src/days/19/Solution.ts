@@ -15,19 +15,7 @@ export class Solution extends AbstractSolution {
     }
 
     solveFirst(input: string): string {
-        let blueprints = input.parseRows()
-            .map(row => row.match(ROW_REGEX)!)
-            .map(row => {
-                return {
-                    index: parseInt(row[1]),
-                    costs: [
-                        [parseInt(row[2]), 0, 0, 0],
-                        [parseInt(row[3]), 0, 0, 0],
-                        [parseInt(row[4]), parseInt(row[5]), 0, 0],
-                        [parseInt(row[6]), 0, parseInt(row[7]), 0],
-                    ]
-                }
-            })
+        let blueprints = this.parseBlueprints(input);
 
         let sum = 0
         for (let i = 0; i < blueprints.length; i++) {
@@ -39,7 +27,19 @@ export class Solution extends AbstractSolution {
     }
 
     solveSecond(input: string): string {
-        let blueprints = input.parseRows()
+        let blueprints = this.parseBlueprints(input);
+
+        let prod = 1
+        for (let i = 0; i < Math.min(3, blueprints.length); i++) {
+            let score = this.solvy(32, blueprints[i])
+            prod *= score
+        }
+
+        return prod.toString()
+    }
+
+    private parseBlueprints(input: string) {
+        return input.parseRows()
             .map(row => row.match(ROW_REGEX)!)
             .map(row => {
                 return {
@@ -51,15 +51,7 @@ export class Solution extends AbstractSolution {
                         [parseInt(row[6]), 0, parseInt(row[7]), 0],
                     ]
                 }
-            })
-
-        let prod = 1
-        for (let i = 0; i < Math.min(3, blueprints.length); i++) {
-            let score = this.solvy(32, blueprints[i])
-            prod *= score
-        }
-
-        return prod.toString()
+            });
     }
 
     solvy(time: number, blueprint: { index: number, costs: number[][] }) {
