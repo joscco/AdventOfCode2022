@@ -39,6 +39,8 @@ declare global {
 
         reverse(): T[]
 
+        rotate(number: number): T[];
+
         parseInt(): number[]
 
         slideWindow(width: number): T[][]
@@ -132,10 +134,22 @@ Array.prototype.groupSplitBySize = function <T>(size: number): T[][] {
 }
 
 Array.prototype.offset = function <T>(positions: number): T[] {
-    if (positions < 0) {
+    while (positions < 0 || positions >= this.length) {
         positions = (this.length + positions) % this.length
     }
     return [...this.slice(positions, this.length), ...this.slice(0, positions)]
+}
+
+Array.prototype.rotate = function <T>(positions: number): T[] {
+    while (positions < 0) {
+        positions += this.length
+    }
+
+    if (positions > this.length) {
+        positions %= this.length
+    }
+
+    return [...this.slice(this.length - positions, this.length), ...this.slice(0, this.length - positions)]
 }
 
 Array.prototype.parseInt = function (): number[] {
