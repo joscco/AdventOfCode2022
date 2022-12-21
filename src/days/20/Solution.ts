@@ -29,13 +29,14 @@ export class Solution extends AbstractSolution {
     };
 
     applyMixins(_arr: number[], times = 1): number[]{
-        const arr = _arr.map((n, i) => [n, i]);
+        const arr = _arr.map((x, i) => [x, i]);
         for (let t = 0; t < times; t++) {
-            for (let x = 0; x < arr.length; x++) {
-                const i = arr.findIndex((n) => n[1] === x);
-                const n = arr[i][0];
+            // arr[0] is value and arr[1] is initialIndex. Index of the whole tuple
+            for (let n = 0; n < arr.length; n++) {
+                const i = arr.findIndex((element) => element[1] === n);
+                const x = arr[i][0];
                 arr.splice(i, 1);
-                arr.splice((i + n) % arr.length, 0, [n, x]);
+                arr.splice((i + x) % arr.length, 0, [x, n]);
             }
         }
         return arr.map((a) => a[0]);
