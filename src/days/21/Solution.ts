@@ -69,7 +69,6 @@ export class Solution extends AbstractSolution {
                     } else {
                         low = Math.floor((low + high) / 2)
                     }
-
                 } else if (resultLeft < resultRight) {
                     if(testMode) {
                         low = Math.floor((low + high) / 2)
